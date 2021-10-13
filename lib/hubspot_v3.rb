@@ -3,6 +3,7 @@
 require 'httparty'
 require 'json'
 require_relative "hubspot_v3/version"
+require_relative "hubspot_v3/config"
 
 module HubspotV3
   class RequestFailedError < StandardError; end
