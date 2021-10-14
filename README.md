@@ -21,10 +21,141 @@ Or install it yourself as:
 
 ## Usage
 
+
+### Contacts - Search
+
 ```
 HubspotV3.config.apikey = 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
 
-HubspotV3.contacts_search_by_email("hello@pobble.com")
+bodyhash = {
+  "filterGroups":[
+    {
+      "filters": [
+        {
+          "propertyName": "email",
+          "operator": "EQ",
+          "value": email
+        }
+      ]
+    }
+  ]
+}
+HubspotV3.contacts_search(bodyhash)
+
+```
+
+### Contacts - find by email
+
+```
+HubspotV3.contacts_search_by_emails(["hello@pobble.com", "info@pobble.com"])
+[
+ {"id"=>"901",
+  "properties"=>
+   {"createdate"=>"2020-09-10T10:29:54.714Z",
+    "email"=>"hello@pobble.com",
+    "firstname"=>nil,
+    "hs_object_id"=>"901",
+    "lastmodifieddate"=>"2021-10-13T10:16:19.015Z",
+    "lastname"=>"test"},
+  "createdAt"=>"2020-09-10T10:29:54.714Z",
+  "updatedAt"=>"2021-10-13T10:16:19.015Z",
+  "archived"=>false},
+ {"id"=>"3401",
+  "properties"=>
+   {"createdate"=>"2021-10-13T13:31:04.599Z",
+    "email"=>"info@pobble.com",
+    "firstname"=>"Bryan",
+    "hs_object_id"=>"3401",
+    "lastmodifieddate"=>"2021-10-13T13:31:07.126Z",
+    "lastname"=>"Cooper"},
+  "createdAt"=>"2021-10-13T13:31:04.599Z",
+  "updatedAt"=>"2021-10-13T13:31:07.126Z",
+  "archived"=>false}
+]
+```
+
+### Contacts - find by email & results mapped by email
+
+```
+HubspotV3.contacts_search_by_emails(["hello@pobble.com", "info@pobble.com"])
+
+{
+    "anas+10093@pobble.com" => {
+                "id" => "901",
+        "properties" => {
+                  "createdate" => "2020-09-10T10:29:54.714Z",
+                       "email" => "hello@pobble.com",
+                   "firstname" => nil,
+                "hs_object_id" => "901",
+            "lastmodifieddate" => "2021-10-13T10:16:19.015Z",
+                    "lastname" => "test"
+        },
+         "createdAt" => "2020-09-10T10:29:54.714Z",
+         "updatedAt" => "2021-10-13T10:16:19.015Z",
+          "archived" => false
+    },
+    "bcooper@biglytics.net" => {
+                "id" => "3401",
+        "properties" => {
+                  "createdate" => "2021-10-13T13:31:04.599Z",
+                       "email" => "info@pobble.com",
+                   "firstname" => "Bryan",
+                "hs_object_id" => "3401",
+            "lastmodifieddate" => "2021-10-13T13:31:07.126Z",
+                    "lastname" => "Cooper"
+        },
+         "createdAt" => "2021-10-13T13:31:04.599Z",
+         "updatedAt" => "2021-10-13T13:31:07.126Z",
+          "archived" => false
+    }
+}
+```
+
+### Contacts - Batch Create
+
+```
+bodyhash = {
+  "inputs": [
+    {
+      "properties": {
+        "email": "equivalent@eq8.eu",
+        "firstname": "Tomas",
+        "lastname": "Talent",
+      }
+    }
+  ]
+}
+
+begin
+  HubspotV3.contacts_create(bodyhash)
+rescue HubspotV3::RequestFailedError => e
+  puts e.message
+  # => 409 - Contact already exists. Existing ID: 3401
+
+  httparty_response_object = e.httparty_response
+  # =>  #<HTTParty::Response:0x1d920 parsed_response={"status"=>"error"...
+end
+```
+
+### Contacts - Batch Update
+
+```
+bodyhash = {
+  "inputs": [
+    {
+      "id": "1",
+      "properties": {
+        "company": "Biglytics",
+        "email": "bcooper@biglytics.net",
+        "firstname": "Bryan",
+        "lastname": "Cooper",
+        "phone": "(877) 929-0687",
+        "website": "biglytics.net"
+      }
+    }
+  ]
+}
+HubspotV3.contacts_update(bodyhash)
 ```
 
 
