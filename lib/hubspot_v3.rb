@@ -4,6 +4,7 @@ require 'httparty'
 require 'json'
 require_relative "hubspot_v3/version"
 require_relative "hubspot_v3/config"
+require_relative "hubspot_v3/helpers"
 
 module HubspotV3
   class RequestFailedError < StandardError
@@ -49,10 +50,7 @@ module HubspotV3
   end
 
   def self.contacts_search_by_emails_mapped(emails_ary)
-    contacts_search_by_emails(emails_ary).inject({}) do |hash, result|
-      hash[result.fetch('properties').fetch('email')] = result
-      hash
-    end
+    HubspotV3::Helper.map_search_by_email(contacts_search_by_emails(emails_ary))
   end
 
   def self.url(path)

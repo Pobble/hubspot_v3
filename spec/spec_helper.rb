@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "hubspot_v3"
+require_relative '../lib/hubspot_v3/mock_contract'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
