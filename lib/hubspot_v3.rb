@@ -50,7 +50,7 @@ module HubspotV3
   end
 
   def self.contacts_search_by_emails_mapped(emails_ary)
-    HubspotV3::Helper.map_search_by_email(contacts_search_by_emails(emails_ary))
+    HubspotV3::Helpers.map_search_by_email(contacts_search_by_emails(emails_ary))
   end
 
   def self.url(path)

@@ -186,6 +186,9 @@ HubspotV3::MockContract.contacts_search_by_emails(["hello@pobble.com", "notfound
 
 HubspotV3::MockContract.contacts_search_by_emails_mapped(["hello@pobble.com", "notfound@pobble.com", "info@pobble.com"]).keys
 # => ["hello@pobble.com", "info@pobble.com"]
+```
+
+`id` field of test Contact contracts is calculated as `'info@pobble.com'.bytes.sum == 1485`
 
 > More info on how to use [Contract tests](https://blog.eq8.eu/article/explicit-contracts-for-rails-http-api-usecase.html)
 
