@@ -3,6 +3,8 @@ module HubspotV3
     extend self
 
     def contacts_search_by_emails(emails)
+      emails = emails.reject { |e| e.match?(/notfound/)}
+
       emails.map do |email|
         id = email.bytes.sum # sum of asci values of the email string
         first_name = email.split('@').first

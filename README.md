@@ -158,6 +158,39 @@ bodyhash = {
 HubspotV3.contacts_update(bodyhash)
 ```
 
+## Test your app
+
+You can use http interceptor like [webmock](https://github.com/bblimke/webmock), [vcr](https://github.com/vcr/vcr).
+
+Or you can use explicit contracts provided in this gem.
+
+```
+require 'hubspot_v3'
+require 'hubspot_v3/mock_contract'
+
+HubspotV3::MockContract.contacts_search_by_emails(["hello@pobble.com", "notfound@pobble.com", "info@pobble.com"])
+# [
+#   {
+#     "id" => 1589, "properties" => {
+#       "email"=>"hello@pobble.com",
+#       ...
+#     }
+#   },
+    {
+#    "id" => 1485, "properties" => {
+#       "email"=>"info@pobble.com",
+#       ...
+#       }
+#   }
+# ]
+
+HubspotV3::MockContract.contacts_search_by_emails_mapped(["hello@pobble.com", "notfound@pobble.com", "info@pobble.com"]).keys
+# => ["hello@pobble.com", "info@pobble.com"]
+
+> More info on how to use [Contract tests](https://blog.eq8.eu/article/explicit-contracts-for-rails-http-api-usecase.html)
+
+
+
 
 ## Development
 

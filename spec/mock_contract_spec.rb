@@ -70,5 +70,22 @@ RSpec.describe HubspotV3::MockContract do
              "lastname"=>"pobble.com"}}
       ])
     end
+
+    it do
+      res = described_class.contacts_search_by_emails(["hello@pobble.com", "anythnig-notfound@pobble.com"])
+      expect(res).to match_array([
+          {"id"=>1589,
+           "createdAt"=>"2020-09-10T10:29:54.714Z",
+           "updatedAt"=>"2021-10-13T10:16:19.015Z",
+           "archived"=>false,
+           "properties"=>
+            {"createdate"=>"2020-09-10T10:29:54.714Z",
+             "email"=>"hello@pobble.com",
+             "firstname"=>"hello",
+             "hs_object_id"=>1589,
+             "lastmodifieddate"=>"2021-10-13T10:16:19.015Z",
+             "lastname"=>"pobble.com"}},
+      ])
+    end
   end
 end
