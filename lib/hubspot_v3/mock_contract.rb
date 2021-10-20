@@ -2,10 +2,28 @@ module HubspotV3
   module MockContract
     extend self
 
-    def contacts_create(bodyhash)
-      inputs = bodyhash.fetch('inputs') { raise KeyError.new("Inputs hash must contain key 'inputs' - hash['inputs']") }
+    def contacts_update(bodyhash)
+      inputs = _fetch_inputs(bodyhash)
+
       inputs.map do |input|
-        properties = input.fetch('properties') { raise KeyError.new("Item in Inputs hash must contain key 'properties' - hash['inputs'][0]['properties']") }
+        id = _fetch_input_id(input)
+        properties = _fetch_input_properties(input)
+
+        {
+          "id"=>id,
+          "properties"=>properties,
+          "createdAt"=>"2021-10-18T15:12:14.245Z",
+          "updatedAt"=>"2021-10-18T15:12:16.539Z",
+          "archived"=>false
+        }
+      end
+    end
+
+    def contacts_create(bodyhash)
+      inputs = _fetch_inputs(bodyhash)
+
+      inputs.map do |input|
+        properties = _fetch_input_properties(input)
 
         email = properties.fetch('email') { raise KeyError.new("Item in Inputs hash must contain key 'properties.email' - hash['inputs'][0]['properties']['email']") }
         id = _calculate_id(email) + 1_000_000
@@ -31,7 +49,6 @@ module HubspotV3
           "archived"=>false
         }
       end
-      #HubspotV3::RequestFailedError: 409 - Contact already exists. Existing ID: 3501
     end
 
     def contacts_search_by_emails(emails)
@@ -41,7 +58,6 @@ module HubspotV3
         id = _calculate_id(email)
         first_name = email.split('@').first
         last_name  = email.split('@').last
-
 
         {
           "id"=>id,
@@ -66,6 +82,18 @@ module HubspotV3
 
     def _calculate_id(email)
       email.bytes.sum  # sum of asci values of the email string
+    end
+
+    def _fetch_inputs(bodyhash)
+      bodyhash.fetch('inputs') { raise KeyError.new("Inputs hash must contain key 'inputs' - hash['inputs']") }
+    end
+
+    def _fetch_input_properties(input)
+      input.fetch('properties') { raise KeyError.new("Item in Inputs hash must contain key 'properties' - hash['inputs'][0]['properties']") }
+    end
+
+    def _fetch_input_id(input)
+      input.fetch('id') { raise KeyError.new("Item in Inputs hash must contain key 'id' - hash['inputs'][0]['id']") }
     end
   end
 end
