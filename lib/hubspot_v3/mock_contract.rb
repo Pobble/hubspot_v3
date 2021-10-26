@@ -28,11 +28,13 @@ module HubspotV3
         email = properties.fetch('email') { raise KeyError.new("Item in Inputs hash must contain key 'properties.email' - hash['inputs'][0]['properties']['email']") }
         id = _calculate_id(email) + 1_000_000
 
+        sanitized_email = _sanitize_email_as_hubspot_would(email) # sanitize after id was generated
+
         default_properties = {
           "createdate"=>"2021-10-18T15:12:14.245Z",
-          "email"=>email,
+          "email"=>sanitized_email,
           "hs_all_contact_vids"=>"3451",
-          "hs_email_domain"=>email.split('@').last,
+          "hs_email_domain"=>sanitized_email.split('@').last,
           "hs_is_unworked"=>"true",
           "hs_object_id"=>id,
           "hs_pipeline"=>"contacts-lifecycle-pipeline",
@@ -58,6 +60,7 @@ module HubspotV3
         id = _calculate_id(email)
         first_name = email.split('@').first
         last_name  = email.split('@').last
+        sanitized_email = _sanitize_email_as_hubspot_would(email) # sanitize after id was generated
 
         {
           "id"=>id,
@@ -66,7 +69,7 @@ module HubspotV3
           "archived"=>false,
           "properties"=> {
             "createdate"=>"2020-09-10T10:29:54.714Z",
-            "email"=>email,
+            "email"=>sanitized_email,
             "firstname"=>first_name,
             "hs_object_id"=>id,
             "lastmodifieddate"=>"2021-10-13T10:16:19.015Z",
@@ -82,6 +85,11 @@ module HubspotV3
 
     def _calculate_id(email)
       email.bytes.sum  # sum of asci values of the email string
+    end
+
+    def _sanitize_email_as_hubspot_would(email)
+      # Hubspot downcase all emails e.g. tomas@Pobble.com would be tomas@pobble.com
+      email.downcase.strip
     end
 
     def _fetch_inputs(bodyhash)
