@@ -1,26 +1,23 @@
 # HubspotV3
 
+There are 2 existing Hubspot gems out there:
+* [Official API v3 gem](https://github.com/HubSpot/hubspot-api-ruby) (which is just generated from API)
+* 
 
->new gem  in Progress !!!
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'hubspot_v3'
+gem 'hubspot_v3', github: 'Pobble/hubspot_v3'
 ```
 
 And then execute:
 
     $ bundle install
 
-Or install it yourself as:
-
-    $ gem install hubspot_v3
-
 ## Usage
-
 
 ### Contacts - Search
 
@@ -188,10 +185,9 @@ HubspotV3::MockContract.contacts_search_by_emails_mapped(["hello@pobble.com", "n
 # => ["hello@pobble.com", "info@pobble.com"]
 ```
 
-`id` field of test Contact contracts is calculated as `'info@pobble.com'.bytes.sum == 1485`
+`id` field of test Contact contracts is calculated as `'info@pobble.com'.bytes.sum == 1485`, create contacts will be `'info@pobble.com'.bytes.sum + 1_000_000 == 1001485`
 
 > More info on how to use [Contract tests](https://blog.eq8.eu/article/explicit-contracts-for-rails-http-api-usecase.html)
-
 
 
 
