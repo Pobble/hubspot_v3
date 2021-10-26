@@ -1,9 +1,26 @@
 # HubspotV3
 
-There are 2 existing Hubspot gems out there:
-* [Official API v3 gem](https://github.com/HubSpot/hubspot-api-ruby) (which is just generated from API)
-* 
+Ruby gem wrapper around Hubspot API V3 
 
+Currently this gem focuses on **Batch** update/create/search of Contacts. More info in [source code](https://github.com/Pobble/hubspot_v3/blob/master/lib/hubspot_v3.rb)
+
+
+Reason why Batch (or Bulk) operations are preferred by this gem is that Hubspot has a strict [limits on number of requests](https://developers.hubspot.com/apisbytier)
+(around 100 requests per 10seconds,  up to 200 requests per 10 seconds).
+When dealing with large number of Contacts single request operations are
+killing those limits quite quickly.
+
+
+## Other solutions out there
+
+Gem currently covers only features that are needed for our use cases, however this repo/gem is open for any Pull Requests with additional features.
+
+If you need other features and wish not to contribute to this gem there are 2 existing Hubspot gems out there:
+
+* [Official gem](https://github.com/HubSpot/hubspot-api-ruby) based on V3 API but is just generated Ruby code
+* [Community gem](https://github.com/HubspotCommunity/hubspot-ruby) which is better code quality but based on V1 API
+
+It's possible to use our gem along with  any of these two gems.
 
 ## Installation
 
@@ -19,10 +36,15 @@ And then execute:
 
 ## Usage
 
-### Contacts - Search
+### set API key
 
 ```
 HubspotV3.config.apikey = 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
+```
+
+### Contacts - Search
+
+```
 
 bodyhash = {
   "filterGroups":[
@@ -71,6 +93,8 @@ HubspotV3.contacts_search_by_emails(["hello@pobble.com", "info@pobble.com"])
 ]
 ```
 
+> Note: will search only primary email of a Contact
+
 ### Contacts - find by email & results mapped by email
 
 ```
@@ -107,6 +131,8 @@ HubspotV3.contacts_search_by_emails(["hello@pobble.com", "info@pobble.com"])
     }
 }
 ```
+
+> Note: will search only primary email of a Contact
 
 ### Contacts - Batch Create
 
