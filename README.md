@@ -60,8 +60,13 @@ bodyhash = {
   ]
 }
 HubspotV3.contacts_search(bodyhash)
-
 ```
+
+Full list of search filters and operators can be found in [official hubspot docs](https://developers.hubspot.com/docs/api/crm/contacts)
+
+![Screenshot from 2021-11-25 12-04-08](https://user-images.githubusercontent.com/721990/143430312-4d94aa49-5d8e-4910-8076-628b62a7a954.png)
+
+
 
 ### Contacts - find by email
 
