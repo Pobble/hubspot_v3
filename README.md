@@ -28,8 +28,10 @@ It's possible to use our gem along with  any of these two gems.
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'hubspot_v3', github: 'Pobble/hubspot_v3'
+gem 'hubspot_v3'
 ```
+
+[![Gem Version](https://badge.fury.io/rb/hubspot_v3.svg)](https://badge.fury.io/rb/hubspot_v3)
 
 And then execute:
 
