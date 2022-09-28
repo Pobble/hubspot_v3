@@ -1,6 +1,6 @@
 # HubspotV3
 
-Ruby gem wrapper around Hubspot API V3 
+Ruby gem wrapper around Hubspot CRM API V3
 
 Currently this gem focuses on **Batch** update/create/search of Contacts. More info in [source code](https://github.com/Pobble/hubspot_v3/blob/master/lib/hubspot_v3.rb)
 
@@ -13,7 +13,8 @@ killing those limits quite quickly.
 
 ## Other solutions out there
 
-Gem currently covers only features that are needed for our use cases, however this repo/gem is open for any Pull Requests with additional features.
+Gem currently covers only features that are needed for our use cases (CRM Contacts & Companies),
+however this repo/gem is open for any Pull Requests with additional features.
 
 If you need other features and wish not to contribute to this gem there are 2 existing Hubspot gems out there:
 
@@ -36,10 +37,18 @@ And then execute:
 
 ## Usage
 
-### set API key
+### set App Token (API key)
+
+> **NOTE**: Starting November 30, 2022, HubSpot API keys will no longer be able to be used as an
+> authentication method to access HubSpot APIs [source](https://developers.hubspot.com/changelog/upcoming-api-key-sunset)
+
+This means you cannot use Hubspot API KEY (a.k.a hapikey) to authenticate but rather create Hubspot Private App and use it's auth token
+ ([how to setup Hubspot private app](https://developers.hubspot.com/docs/api/private-apps#make-api-calls-with-your-app-s-access-token))
+
 
 ```
-HubspotV3.config.apikey = 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
+# Hubspot private app token (It's not the same as API KEY)
+HubspotV3.config.token = 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
 ```
 
 ### Contacts - Search
@@ -184,6 +193,121 @@ bodyhash = {
 HubspotV3.contacts_update(bodyhash)
 ```
 
+### Companies - Search
+
+```
+bodyhash = {
+  "filterGroups":[
+    {
+      "filters": [
+        {
+          "propertyName": "name",
+          "operator": "EQ",
+          "value": "ACME Company"
+        }
+      ]
+    }
+  ]
+}
+HubspotV3.companies_search(bodyhash)
+```
+
+### Companies - Search by id
+
+```
+HubspotV3.companies_search_by_ids(['9582682125'])
+#=> [
+#  {
+#    "id"=>"9582682125",
+#    "properties"=> {
+#      "createdate"=>"2022-09-13T15:06:03.116Z",
+#      "domain"=>nil,
+#      "hs_lastmodifieddate"=>"2022-09-13T15:20:48.331Z",
+#      "hs_object_id"=>"9582682125",
+#      "name"=>"ACME Company"},
+#    "createdAt"=>"2022-09-13T15:06:03.116Z",
+#    "updatedAt"=>"2022-09-13T15:20:48.331Z",
+#    "archived"=>false
+#  }
+#]
+
+HubspotV3.companies_search_by_ids(['66666'])
+#=> []
+
+```
+
+
+* Full list of search filters and operators can be found in [official hubspot docs](https://developers.hubspot.com/docs/api/crm/companies)
+
+### Companies - Batch Create
+
+```
+bodyhash = {
+  "inputs": [
+    {
+      "properties": {
+        "name": "ACME Corporation"
+      }
+    },
+    {
+      "city": "Cambridge",
+      "domain": "biglytics.net",
+      "industry": "Technology",
+      "name": "Biglytics",
+      "phone": "(877) 929-0687",
+      "state": "Massachusetts"
+    }
+  ]
+}
+
+begin
+  HubspotV3.companies_create(bodyhash)
+rescue HubspotV3::RequestFailedError => e
+  puts e.message
+  # => 409 - some error reason (I never encounterd an error when creating company)
+
+  httparty_response_object = e.httparty_response
+  # =>  #<HTTParty::Response:0x1d920 parsed_response={"status"=>"error"...
+end
+```
+
+return value:
+
+```
+[
+  {
+    "id"=>"9674616673",
+    "properties"=> {
+      ...
+    }
+    ...
+  },
+  {
+    "id"=>"9674616674",
+    "properties"=> {
+      ...
+    }
+    ...
+  }
+]
+```
+
+### Companies - Batch Update
+
+```
+bodyhash = {
+  "inputs": [
+    {
+      "id": "9582682125",
+      "properties": {
+        "name": "ACME Company"
+      }
+    }
+  ]
+}
+HubspotV3.companies_update(bodyhash)
+```
+
 ## Test your app
 
 You can use http interceptor like [webmock](https://github.com/bblimke/webmock), [vcr](https://github.com/vcr/vcr).
@@ -218,7 +342,28 @@ HubspotV3::MockContract.contacts_search_by_emails_mapped(["hello@pobble.com", "n
 
 > More info on how to use [Contract tests](https://blog.eq8.eu/article/explicit-contracts-for-rails-http-api-usecase.html)
 
+## Troubleshooting
 
+#### Error - Cannot deserialize value of type
+```
+`post': 400 - Invalid input JSON on line 1, column 1: Cannot deserialize value of type `com.hubspot.apiutils.core.models.batch.BatchInput$Json<com.hubspot.inbounddb.publicobject.core.v2.SimplePublicObjectBatchInput>` from Array value (token `JsonToken.START_ARRAY`) (HubspotV3::RequestFailedError)
+```
+
+You probably forgot to wrap your batch call  body hash  in `inputs`.
+
+E.g.:
+
+instead of
+
+```
+HubspotV3.companies_update([{"id"=>"1234", "properties"=> {"city" => "Cambridge"}}])
+```
+
+you need to do:
+
+```
+HubspotV3.companies_update("inputs" => [{"id"=>"1234", "properties"=> {"city" => "Cambridge"}}])
+```
 
 ## Development
 
