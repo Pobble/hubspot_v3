@@ -323,13 +323,15 @@ require 'hubspot_v3/mock_contract'
 HubspotV3::MockContract.contacts_search_by_emails(["hello@pobble.com", "notfound@pobble.com", "info@pobble.com"])
 # [
 #   {
-#     "id" => 1589, "properties" => {
+#     "id" => 1589,
+#     "properties" => {
 #       "email"=>"hello@pobble.com",
 #       ...
 #     }
 #   },
-    {
-#    "id" => 1485, "properties" => {
+#   {
+#    "id" => 1485,
+#    "properties" => {
 #       "email"=>"info@pobble.com",
 #       ...
 #       }
@@ -340,7 +342,7 @@ HubspotV3::MockContract.contacts_search_by_emails_mapped(["hello@pobble.com", "n
 # => ["hello@pobble.com", "info@pobble.com"]
 ```
 
-`id` field of test Contact contracts is calculated as `'info@pobble.com'.bytes.sum == 1485`, create contacts will be `'info@pobble.com'.bytes.sum + 1_000_000 == 1001485`
+`id` field of test Contact contracts is calculated as `'info@pobble.com'.bytes.sum == 1485` ([source](https://github.com/Pobble/hubspot_v3/blob/master/lib/hubspot_v3/mock_contract.rb#L181)), create contacts will be `'info@pobble.com'.bytes.sum + 1_000_000 == 1001485` ([source](https://github.com/Pobble/hubspot_v3/blob/master/lib/hubspot_v3/mock_contract.rb#L29))
 
 > More info on how to use [Contract tests](https://blog.eq8.eu/article/explicit-contracts-for-rails-http-api-usecase.html)
 
