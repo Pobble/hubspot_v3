@@ -15,6 +15,8 @@ module HubspotV3
     end
   end
 
+  RequestFailedError = Class.new(RequestFailedError)
+
   API_URL='https://api.hubapi.com'
   CONTACTS_SEARCH='/crm/v3/objects/contacts/search'
   CONTACTS_CREATE='/crm/v3/objects/contacts/batch/create'
@@ -97,6 +99,9 @@ module HubspotV3
     case res.code
     when 200, 201
       res.parsed_response['results']
+    when 429
+      # Hubspot error 429 - You have reached your secondly limit.
+      raise HubspotV3::HubspotSecondlyLimitReached.new("#{res.code} - #{res.parsed_response['message']}", res)
     else
       raise HubspotV3::RequestFailedError.new("#{res.code} - #{res.parsed_response['message']}", res)
     end
