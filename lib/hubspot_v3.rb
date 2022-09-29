@@ -15,7 +15,7 @@ module HubspotV3
     end
   end
 
-  RequestFailedError = Class.new(RequestFailedError)
+  HubspotSecondlyLimitReached = Class.new(RequestFailedError)
 
   API_URL='https://api.hubapi.com'
   CONTACTS_SEARCH='/crm/v3/objects/contacts/search'
