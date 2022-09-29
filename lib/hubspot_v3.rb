@@ -15,7 +15,7 @@ module HubspotV3
     end
   end
 
-  HubspotSecondlyLimitReached = Class.new(RequestFailedError)
+  HubspotRequestLimitReached = Class.new(RequestFailedError)
 
   API_URL='https://api.hubapi.com'
   CONTACTS_SEARCH='/crm/v3/objects/contacts/search'
@@ -92,18 +92,26 @@ module HubspotV3
   end
 
   def self.post(path, bodyhash)
-    res = HTTParty.post(url(path), {
+    httparty_response = HTTParty.post(url(path), {
       body: bodyhash.to_json,
       headers: headers
     })
-    case res.code
+    case httparty_response.code
     when 200, 201
-      res.parsed_response['results']
+      httparty_response.parsed_response['results']
     when 429
       # Hubspot error 429 - You have reached your secondly limit.
-      raise HubspotV3::HubspotSecondlyLimitReached.new("#{res.code} - #{res.parsed_response['message']}", res)
+      raise _hubspot_request_limit_reached_error(httparty_response)
+    when 500
+      if httparty_response.parsed_response["category"] == "RATE_LIMITS"
+        # e.g.: {"status":"error","message":"You have reached your secondly limit.","category":"RATE_LIMITS"}
+        # Yes, Hubspot will sometimes give 429 or 500 when limit reached
+        raise _hubspot_request_limit_reached_error(httparty_response)
+      else
+        raise _hubspot_request_failed_error(httparty_response)
+      end
     else
-      raise HubspotV3::RequestFailedError.new("#{res.code} - #{res.parsed_response['message']}", res)
+      raise _hubspot_request_failed_error(httparty_response)
     end
   end
 
@@ -112,5 +120,17 @@ module HubspotV3
       'Content-Type' => 'application/json',
       'Authorization': "Bearer #{config.token}"
     }
+  end
+
+  def self._hubspot_request_limit_reached_error(httparty_response)
+    code = httparty_response.code
+    message = httparty_response.parsed_response['message']
+    HubspotV3::HubspotRequestLimitReached.new("#{code} - #{message}", httparty_response)
+  end
+
+  def self._hubspot_request_failed_error(httparty_response)
+    code = httparty_response.code
+    message = httparty_response.parsed_response['message']
+    HubspotV3::RequestFailedError.new("#{code} - #{message}", httparty_response)
   end
 end
