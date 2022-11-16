@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.name          = "hubspot_v3"
   spec.version       = HubspotV3::VERSION
   spec.authors       = ["Tomas Valent"]
-  spec.email         = ["tomas.valent@gmail.com"]
+  spec.email         = ["equivalent@eq8.eu"]
 
   spec.summary       = "Hubspot CRM API (v3) Ruby gem"
   spec.description   = "Ruby wrapper around Hubspot CRM API v3 with simple implementation around batch endpoints and private apps token support"
